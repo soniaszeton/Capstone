@@ -59,10 +59,7 @@ while True:
     print 'Wholesome Count: ', totalwholesome
 
     #write to file in s3 bucket
-    f = open("tweetcounter.txt", "w")
-    f.write(str(totalwholesome))
-    data = open('tweetcounter.txt', 'rb')
-    s3.Bucket('szeton-capstone').put_object(Key='tweetcounter.txt', Body=data)
+    s3.Bucket('szeton-capstone').put_object(Key='tweetcounter.txt', Body=str(totalwholesome))
 
     totalpuppy += getTweets('puppy', puppyID)
     print 'Puppy Count: ', totalpuppy
