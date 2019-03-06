@@ -10,6 +10,7 @@
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
+const String url = "/szeton-capstone/tweetcounter.txt";
 const char* host = "s3.us-east-2.amazonaws.com";
 const int httpsPort = 443;
 
@@ -23,8 +24,9 @@ int blue = 0;
 //initialize strand, connected to pin 13
 Adafruit_NeoPixel strand = Adafruit_NeoPixel(numpixels, 13);
 
+
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   strand.begin();
   Serial.println();
   Serial.print("connecting to ");
@@ -40,6 +42,9 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
+}
+
+void loop() {
   WiFiClientSecure client;
   Serial.print("connecting to ");
   Serial.println(host);
@@ -49,7 +54,6 @@ void setup() {
     return;
   }
 
-  String url = "/szeton-capstone/tweetcounter.txt";
   Serial.print("requesting URL: ");
   Serial.println(url);
 
@@ -79,8 +83,5 @@ void setup() {
   Serial.println("==========");
   Serial.println("closing connection");
 
-}
-
-void loop() {
-
+  delay(1000);
 }
