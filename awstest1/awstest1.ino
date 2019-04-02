@@ -55,6 +55,8 @@ void loop() {
     return;
   }
 
+  client.setTimeout(1);
+
   Serial.print("requesting URL: ");
   Serial.println(url);
 
@@ -71,13 +73,9 @@ void loop() {
       break;
     }
   }
-  String line = client.readStringUntil('\n');
-  Serial.println(line);
-  if (line.startsWith("{\"state\":\"success\"")) {
-    Serial.println("esp8266/Arduino CI successful!");
-  } else {
-    Serial.println("esp8266/Arduino CI has failed");
-  }
+  String line = client.readString();
+  client.stop();
+  
 
   Serial.println("reply was:");
   Serial.println("==========");
