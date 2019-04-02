@@ -48,16 +48,16 @@ def getTweets(keyword, tweetID):
 #IF 1 tweet = 1 call, maybe eliminate RT to cut back?
 
 
-totalcount = 0
-wordID = getInitialID('wholesome')
+currentcount = 0
+wordID = getInitialID('excited')
 
 while True:
-    time.sleep(10)
-    totalcount += getTweets('wholesome', wordID)
-    print 'Wholesome Count: ', totalcount
+    time.sleep(2)
+    currentcount = getTweets('excited', wordID)
+    print 'Excited Count: ', currentcount
 
     #write to file in s3 bucket
-    s3.Bucket('szeton-capstone').put_object(Key='tweetcounter.txt', Body=str(totalcount))
+    s3.Bucket('szeton-capstone').put_object(Key='tweetcounter.txt', Body=str(currentcount))
 
 
     #maybe need to update the tweet ID so no repeats? Unsure.

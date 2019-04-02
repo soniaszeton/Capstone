@@ -14,15 +14,16 @@ const String url = "/szeton-capstone/tweetcounter.txt";
 const char* host = "s3.us-east-2.amazonaws.com";
 const int httpsPort = 443;
 
-int numpixels = 13;
+int numpixels = 29;
 
 int red = 0;
 int green = 0;
 int blue = 0;
 
 //output
-//initialize strand, connected to pin 13
-Adafruit_NeoPixel strand = Adafruit_NeoPixel(numpixels, 13);
+//initialize strand, connected to pin 15
+Adafruit_NeoPixel strand = Adafruit_NeoPixel(numpixels, 15);
+
 
 
 void setup() {
@@ -71,6 +72,7 @@ void loop() {
     }
   }
   String line = client.readStringUntil('\n');
+  Serial.println(line);
   if (line.startsWith("{\"state\":\"success\"")) {
     Serial.println("esp8266/Arduino CI successful!");
   } else {
@@ -83,5 +85,49 @@ void loop() {
   Serial.println("==========");
   Serial.println("closing connection");
 
-  delay(1000);
+  int thecount = line.toInt(); 
+
+  if (thecount < 5) {
+    //white
+    red = 255;
+    green = 255;
+    blue = 255;
+  } else if (thecount < 10) {
+    //red
+    red = 255;
+    green = 0;
+    blue = 0;
+  } else if (thecount < 12) {
+    //yellow
+    red = 255;
+    green = 255;
+    blue = 0;
+  } else if (thecount < 14) {
+    //green
+    red = 0;
+    green = 255;
+    blue = 0;
+  } else if (thecount < 16) {
+    //blue
+    red = 0;
+    green = 0;
+    blue = 255;
+  } else if (thecount < 18) {
+    //magenta
+    red = 255;
+    green = 0;
+    blue = 255;
+  } else {
+    //cyan
+    red = 0;
+    green = 255;
+    blue = 255;
+  }
+
+  for(int i = 0; i < numpixels; i++){
+    strand.setPixelColor(i, red, green, blue);
+    strand.show();
+  }
+
+  delay(100);  // wait 1 second
 }
