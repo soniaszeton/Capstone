@@ -3,6 +3,9 @@ import twittercredentials
 import json
 import time
 import boto3
+import sys
+
+userKeyword = sys.argv[1]
 
 twitter = Twython(twittercredentials.CONSUMER_KEY, twittercredentials.CONSUMER_SECRET, twittercredentials.ACCESS_TOKEN, twittercredentials.ACCESS_TOKEN_SECRET)
 
@@ -11,14 +14,15 @@ s3 = boto3.resource('s3')
 #results = twitter.cursor(twitter.search, q='wholesome', count=1, lang='en')
 #results = twitter.cursor(twitter.search, q='puppy', count=1, lang='en', since_id=1097719009808662529)
 def getInitialID(keyword):
+    firstTweet = 0
     first_result = twitter.search(count=1, q=keyword)
     try:
         for tweet in first_result['statuses']:
-            initialID = tweet['id']
-            print 'Tweet ID: ', initialID 
+            firstTweet = tweet['id']
+            print 'Tweet ID: ', firstTweet 
     except TwythonError as e:
         print(e)
-    return initialID
+    return firstTweet
 
 def getTweets(keyword, tweetID):
     counter = 0
@@ -49,11 +53,15 @@ def getTweets(keyword, tweetID):
 
 
 currentcount = 0
-wordID = getInitialID('excited')
+#wordID = getInitialID('excited')
 
 while True:
-    time.sleep(2)
-    currentcount = getTweets('excited', wordID)
+    wordID = 0
+    while(wordID == 0):
+        time.sleep(1)
+        wordID = getInitialID(userKeyword)
+    time.sleep(4)
+    currentcount = getTweets(userKeyword, wordID)
     print 'Excited Count: ', currentcount
 
     #write to file in s3 bucket

@@ -14,17 +14,16 @@ const String url = "/szeton-capstone/tweetcounter.txt";
 const char* host = "s3.us-east-2.amazonaws.com";
 const int httpsPort = 443;
 
-int numpixels = 29;
+int numpixels = 49;
+int brightness = 0.50;  // range 0..1
 
 int red = 0;
 int green = 0;
 int blue = 0;
 
 //output
-//initialize strand, connected to pin 15
-Adafruit_NeoPixel strand = Adafruit_NeoPixel(numpixels, 15);
-
-
+//initialize strand, connected to pin 14
+Adafruit_NeoPixel strand = Adafruit_NeoPixel(numpixels, 14);
 
 void setup() {
   Serial.begin(115200);
@@ -35,7 +34,8 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
+    yield();
+    delay(100);
     Serial.print(".");
   }
   Serial.println("");
@@ -60,30 +60,31 @@ void loop() {
   Serial.print("requesting URL: ");
   Serial.println(url);
 
-  client.print(String("GET ") + url + " HTTP/1.1\r\n" + 
-               "Host: " + host + "\r\n" + 
-               "User-Agent: BuildFailureDetectorESP8266\r\n" +
-               "Connection: close\r\n\r\n");
-
+  // send the request to retrieve the latest data
+  client.println(String("GET ") + url + " HTTP/1.1");
+  client.println(String("Host: ") + host); 
+  client.println("Connection: close");
+  client.println();
   Serial.println("request sent");
+
+  // read the response
+  Serial.println("Header:");
   while (client.connected()) {
     String line = client.readStringUntil('\n');
+    Serial.println(line);
     if (line == "\r") {
-      Serial.println("headers received");
       break;
     }
   }
   String line = client.readString();
   client.stop();
+  Serial.println(String("Result: ") + line);
+  Serial.println();
   
-
-  Serial.println("reply was:");
-  Serial.println("==========");
-  Serial.println(line);
-  Serial.println("==========");
-  Serial.println("closing connection");
-
   int thecount = line.toInt(); 
+  if (thecount == 0) {
+    return;
+  }
 
   if (thecount < 5) {
     //white
@@ -122,10 +123,17 @@ void loop() {
     blue = 255;
   }
 
+  
+
+  Serial.println(String("red: ") + red);
+  Serial.println(String("green: ") + green);
+  Serial.println(String("blue: ") + blue);
+  
   for(int i = 0; i < numpixels; i++){
     strand.setPixelColor(i, red, green, blue);
     strand.show();
   }
 
-  delay(100);  // wait 1 second
+  yield();
+  delay(100);  // wait 0.1 seconds
 }
