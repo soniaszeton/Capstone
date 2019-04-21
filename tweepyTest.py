@@ -1,35 +1,91 @@
-from __future__ import absolute_import, print_function
+# -*- coding: iso-8859-15 -*-
 
+from __future__ import absolute_import, print_function
+import time
+
+# import the twitter streaming API
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 
-# Go to http://apps.twitter.com and create an app.
-# The consumer key and secret will be generated for you after
+# import the AWS S3 API
+import boto3
+s3 = boto3.resource('s3')
+
+# a mapping of LED color to emotions
+emotions = {
+    'red': 'anger',
+    'orange': 'fear',
+    'yellow': 'happiness',
+    'green': 'diligence',
+    'cyan': 'tranquility',
+    'blue': 'sadness',
+    'violet': 'love'
+}
+
+# the list of keywords for each type of emotion
+wordLists = [
+    ['hate', 'pissed', 'mad'],
+    ['scared', 'afraid', 'terrified'],
+    ['glad', 'happy', 'excited'],
+    ['planet', 'work', 'focus'],
+    ['peace', 'relieved', 'relax'],
+    ['sad', 'lonely', 'upset'],
+    ['heart', 'love', '♥']
+]
+
+# the flattened list of keywords to filter the tweets on
+keywords = []
+for sublist in wordLists:
+    for item in sublist:
+        keywords.append(item)
+
+# twitter credentials
 consumer_key="2qz0rhReA523XEUWZ0kA08kKy"
 consumer_secret="Vnrpb4Jq6BtI33nM9h0FrH6dy2lXWvWZW0jd1kG3Zwj485SJJe"
-
-# After the step above, you will be redirected to your app's page.
-# Create an access token under the the "Your access token" section
 access_token="1061737515806265344-EYmpwKI5qeIJPiaZeXsqJ2PWB6bHA4"
 access_token_secret="pvjGkDAHqgevXDb6OdfQmsyUN7Ev7d77Gk3wga7wYQPin"
 
+# define a handler class for when data is received
 class Handler(StreamListener):
     """ A listener handles tweets that are received from the stream.
     This is a basic listener that just prints received tweets to stdout.
     """
     def on_data(self, data):
-        print(data)
+        process_data(data)
         return True
 
     def on_error(self, status):
         print(status)
 
+# the number of seconds since the last reset
+seconds = int(round(time.time()))
+
+# the initial values of the emotions
+values = [0, 0, 0, 0, 0, 0, 0]
+
+# process a single matching tweet
+def process_data(data):
+    if seconds % 10 == 0:
+        # every 10 seconds write current values out to S3 and reset them
+        body = '\n'.join([str(i) for i in values])
+        print("The current values are: " + body)
+        s3.Bucket('szeton-capstone').put_object(Key='tweetcounter.txt', Body=body)
+        values = [0, 0, 0, 0, 0, 0, 0]
+    string = str(data)
+    index = 0
+    for words in wordLists:
+        for keyword in words:
+            if string.contains(keyword):
+                values[index] += 1
+        index += 1
+
+# connect to the twitter streaming API
 if __name__ == '__main__':
-    l = Handler()
+    handler = Handler()
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
 
-    stream = Stream(auth, l)
-    stream.filter(track=['terrified'])
+    stream = Stream(auth, handler)
+    stream.filter(track=keywords)
 
