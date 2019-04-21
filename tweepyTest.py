@@ -73,7 +73,7 @@ def process_data(data):
         # every 10 seconds write current values out to S3 and reset them
         checkpoint = current
         body = '\n'.join([str(i) for i in values])
-        print("The current values are: " + body)
+        print("The current values are: ")
         index = 0
         for emotion in emotions.values():
             print(emotion + ": " + str(values[index]))
