@@ -39,7 +39,6 @@ keywords = []
 for sublist in wordLists:
     for item in sublist:
         keywords.append(item)
-print(keywords)
 
 # twitter credentials
 consumer_key="2qz0rhReA523XEUWZ0kA08kKy"
@@ -75,6 +74,11 @@ def process_data(data):
         checkpoint = current
         body = '\n'.join([str(i) for i in values])
         print("The current values are: " + body)
+        index = 0
+        for emotion in emotions.values():
+            print(emotion + ": " + str(values[index]))
+            index += 1
+        print("")
         s3.Bucket('szeton-capstone').put_object(Key='tweetcounter.txt', Body=body)
         values = [0, 0, 0, 0, 0, 0, 0]
     string = str(data)
