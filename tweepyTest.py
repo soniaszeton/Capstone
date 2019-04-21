@@ -31,7 +31,7 @@ wordLists = [
     ['planet', 'work', 'focus'],
     ['peace', 'relieved', 'relax'],
     ['sad', 'lonely', 'upset'],
-    ['heart', 'love', '♥']
+    ['heart', 'love', 'engaged']
 ]
 
 # the flattened list of keywords to filter the tweets on
@@ -39,12 +39,19 @@ keywords = []
 for sublist in wordLists:
     for item in sublist:
         keywords.append(item)
+print(keywords)
 
 # twitter credentials
 consumer_key="2qz0rhReA523XEUWZ0kA08kKy"
 consumer_secret="Vnrpb4Jq6BtI33nM9h0FrH6dy2lXWvWZW0jd1kG3Zwj485SJJe"
 access_token="1061737515806265344-EYmpwKI5qeIJPiaZeXsqJ2PWB6bHA4"
 access_token_secret="pvjGkDAHqgevXDb6OdfQmsyUN7Ev7d77Gk3wga7wYQPin"
+
+# the number of seconds since the last reset
+checkpoint = int(round(time.time()))
+
+# the initial values of the emotions
+values = [0, 0, 0, 0, 0, 0, 0]
 
 # define a handler class for when data is received
 class Handler(StreamListener):
@@ -58,16 +65,14 @@ class Handler(StreamListener):
     def on_error(self, status):
         print(status)
 
-# the number of seconds since the last reset
-seconds = int(round(time.time()))
 
-# the initial values of the emotions
-values = [0, 0, 0, 0, 0, 0, 0]
-
-# process a single matching tweet
 def process_data(data):
-    if seconds % 10 == 0:
+    global checkpoint
+    global values
+    current = int(round(time.time()))
+    if current > checkpoint + 10:
         # every 10 seconds write current values out to S3 and reset them
+        checkpoint = current
         body = '\n'.join([str(i) for i in values])
         print("The current values are: " + body)
         s3.Bucket('szeton-capstone').put_object(Key='tweetcounter.txt', Body=body)
@@ -76,7 +81,7 @@ def process_data(data):
     index = 0
     for words in wordLists:
         for keyword in words:
-            if string.contains(keyword):
+            if keyword in string:
                 values[index] += 1
         index += 1
 
