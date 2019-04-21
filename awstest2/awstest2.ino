@@ -14,13 +14,14 @@ const String url = "/szeton-capstone/tweetcounter.txt";
 const char* host = "s3.us-east-2.amazonaws.com";
 const int httpsPort = 443;
 
-int numpixels = 49;
+int numpixels = 21;
 
 int maxValue = 12;
 int values[] = {0, 0, 0, 0, 0, 0, 0};
-int redValues[] = {255, 255, 255, 0, 0, 0, 255};
-int greenValues[] = {0, 128, 255, 255, 255, 0, 0};
-int blueValues[] = {0, 0, 0, 0, 255, 255, 255};
+
+int redValues[]   = {255, 211, 255,   0,   0,   0, 148};
+int greenValues[] = {  0, 128, 255, 255, 255,   0,   0};
+int blueValues[]  = {  0,   0,   0,   0, 255, 255, 211};
 
 
 
@@ -94,7 +95,7 @@ void loop() {
       break;
     }
   }
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 7; i++) {
     String line = client.readStringUntil('\n');
     Serial.println(String("Result: ") + line);
     Serial.println();
