@@ -17,7 +17,7 @@ emotions = {
     'red': 'anger',
     'orange': 'fear',
     'yellow': 'happiness',
-    'green': 'diligence',
+    'green': 'environmental',
     'cyan': 'tranquility',
     'blue': 'sadness',
     'violet': 'love'
@@ -25,13 +25,13 @@ emotions = {
 
 # the list of keywords for each type of emotion
 wordLists = [
-    ['hate', 'pissed', 'mad'],
+    ['hate', 'yikes'],
     ['scared', 'afraid', 'terrified'],
-    ['glad', 'happy', 'excited'],
-    ['planet', 'work', 'focus'],
-    ['peace', 'relieved', 'relax'],
+    ['puppy', 'happy', 'excited'],
+    ['green', 'reduce', 'earth'],
+    ['wholesome', 'thankful', 'relax'],
     ['sad', 'lonely', 'upset'],
-    ['heart', 'love', 'engaged']
+    ['friend', 'love', 'engaged']
 ]
 
 # the flattened list of keywords to filter the tweets on
@@ -74,10 +74,13 @@ def process_data(data):
         checkpoint = current
         body = '\n'.join([str(i) for i in values])
         print("The current values are: ")
-        index = 0
-        for emotion in emotions.values():
-            print(emotion + ": " + str(values[index]))
-            index += 1
+        print("anger: " + str(values[0]))
+        print("fear: " + str(values[1]))
+        print("happiness: " + str(values[2]))
+        print("envionmental: " + str(values[3]))
+        print("contentment: " + str(values[4]))
+        print("sadness: " + str(values[5]))
+        print("love: " + str(values[6]))
         print("")
         s3.Bucket('szeton-capstone').put_object(Key='tweetcounter.txt', Body=body)
         values = [0, 0, 0, 0, 0, 0, 0]
