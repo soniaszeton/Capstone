@@ -14,21 +14,23 @@ const String url = "/szeton-capstone/tweetcounter.txt";
 const char* host = "s3.us-east-2.amazonaws.com";
 const int httpsPort = 443;
 
-int numpixels = 21;
+int numpixels = 49;
 
-int maxValue = 12;
+// values read in from s3 bucket
 int values[] = {0, 0, 0, 0, 0, 0, 0};
 
+// RGB values for 7 emotions, red, orange, yellow... anger, fear, happiness...
 int redValues[]   = {255, 211, 255,   0,   0,   0, 148};
 int greenValues[] = {  0, 128, 255, 255, 255,   0,   0};
 int blueValues[]  = {  0,   0,   0,   0, 255, 255, 211};
 
+// max expected value for each emotion
+int maxValues[] = {50, 25, 110, 30, 15, 50, 700};
 
-
-//output
-//initialize strand, connected to pin 14
+//initialize  NeoPixel strand, connected to pin 14
 Adafruit_NeoPixel strand = Adafruit_NeoPixel(numpixels, 14);
 
+//runs once when feather is booting
 void setup() {
   Serial.begin(115200);
   strand.begin();
@@ -49,21 +51,30 @@ void setup() {
 
 }
 
+//calculate brightness based on the read in value of specific emotion
+float calculateBrightness(int emotion) {
+  float brightness = (float)values[emotion]/(float)maxValues[emotion];
+  if (brightness > 1.0) brightness = 1.0;
+  return brightness;
+}
+
+// set LED colors by emotion value
 void setColors() {
   for(int i = 0; i < numpixels; i++){
     int emotion = i % 7;
+    float brightness = calculateBrightness(emotion);
+    Serial.println(brightness);
     strand.setPixelColor(
       i, 
-      redValues[emotion] * values[emotion] / maxValue, 
-      greenValues[emotion] * values[emotion] / maxValue, 
-      blueValues[emotion] * values[emotion] / maxValue
+      redValues[emotion] * brightness, 
+      greenValues[emotion] * brightness, 
+      blueValues[emotion] * brightness
     );
     strand.show();
   }
 }
 
-
-
+//This loop runs continuously
 void loop() {
   WiFiClientSecure client;
   Serial.print("connecting to ");
@@ -100,18 +111,13 @@ void loop() {
     Serial.println(String("Result: ") + line);
     Serial.println();
     if (line.length() > 0) {
-      values[i] = line.toInt() * 255 / maxValue;
+      values[i] = line.toInt();
     }
   }
   client.stop();
-  
-  
+ 
   setColors();
-  
 
-  
-
-
-  yield();
+  yield(); // give time for wifi process
   delay(100);  // wait 0.1 seconds
 }

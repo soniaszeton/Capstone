@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import, print_function
 import time
+import twittercredentials
 
 # import the twitter streaming API
 from tweepy.streaming import StreamListener
@@ -41,10 +42,10 @@ for sublist in wordLists:
         keywords.append(item)
 
 # twitter credentials
-consumer_key="2qz0rhReA523XEUWZ0kA08kKy"
-consumer_secret="Vnrpb4Jq6BtI33nM9h0FrH6dy2lXWvWZW0jd1kG3Zwj485SJJe"
-access_token="1061737515806265344-EYmpwKI5qeIJPiaZeXsqJ2PWB6bHA4"
-access_token_secret="pvjGkDAHqgevXDb6OdfQmsyUN7Ev7d77Gk3wga7wYQPin"
+consumer_key=twittercredentials.CONSUMER_KEY
+consumer_secret=twittercredentials.CONSUMER_SECRET
+access_token=twittercredentials.ACCESS_TOKEN
+access_token_secret=twittercredentials.ACCESS_TOKEN_SECRET
 
 # the number of seconds since the last reset
 checkpoint = int(round(time.time()))
