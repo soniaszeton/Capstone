@@ -25,7 +25,7 @@ int greenValues[] = {  0, 128, 255, 255, 255,   0,   0};
 int blueValues[]  = {  0,   0,   0,   0, 255, 255, 211};
 
 // max expected value for each emotion
-int maxValues[] = {50, 25, 110, 30, 15, 50, 700};
+int maxValues[] = {100, 25, 75, 38, 60, 50, 310};
 
 //initialize  NeoPixel strand, connected to pin 14
 Adafruit_NeoPixel strand = Adafruit_NeoPixel(numpixels, 14);

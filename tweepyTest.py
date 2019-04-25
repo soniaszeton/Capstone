@@ -26,13 +26,13 @@ emotions = {
 
 # the list of keywords for each type of emotion
 wordLists = [
-    ['hate', 'yikes'],
+    ['hate', 'pissed', 'mad'],
     ['scared', 'afraid', 'terrified'],
     ['puppy', 'happy', 'excited'],
     ['green', 'reduce', 'earth'],
-    ['wholesome', 'thankful', 'relax'],
+    ['hope', 'thankful', 'relax'],
     ['sad', 'lonely', 'upset'],
-    ['friend', 'love', 'engaged']
+    ['love', 'proud', 'married']
 ]
 
 # the flattened list of keywords to filter the tweets on
@@ -78,7 +78,7 @@ def process_data(data):
         print("anger: " + str(values[0]))
         print("fear: " + str(values[1]))
         print("happiness: " + str(values[2]))
-        print("envionmental: " + str(values[3]))
+        print("eco-friendly: " + str(values[3]))
         print("contentment: " + str(values[4]))
         print("sadness: " + str(values[5]))
         print("love: " + str(values[6]))
