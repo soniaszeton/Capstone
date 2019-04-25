@@ -24,9 +24,6 @@ int redValues[]   = {255, 211, 255,   0,   0,   0, 148};
 int greenValues[] = {  0, 128, 255, 255, 255,   0,   0};
 int blueValues[]  = {  0,   0,   0,   0, 255, 255, 211};
 
-// max expected value for each emotion
-int maxValues[] = {100, 25, 75, 38, 60, 50, 310};
-
 //initialize  NeoPixel strand, connected to pin 14
 Adafruit_NeoPixel strand = Adafruit_NeoPixel(numpixels, 14);
 
@@ -51,25 +48,18 @@ void setup() {
 
 }
 
-//calculate brightness based on the read in value of specific emotion
-float calculateBrightness(int emotion) {
-  float brightness = (float)values[emotion]/(float)maxValues[emotion];
-  if (brightness > 1.0) brightness = 1.0;
-  return brightness;
-}
-
 // set LED colors by emotion value
 void setColors() {
-  for(int i = 0; i < numpixels; i++){
-    int emotion = i % 7;
-    float brightness = calculateBrightness(emotion);
-    Serial.println(brightness);
-    strand.setPixelColor(
-      i, 
-      redValues[emotion] * brightness, 
-      greenValues[emotion] * brightness, 
-      blueValues[emotion] * brightness
-    );
+  int led = 0;
+  for (int i = 0; i < 7; i++) {
+    for (int j = 0; j < values[i]; j++) {
+        strand.setPixelColor(
+          led++, 
+          redValues[i], 
+          greenValues[i], 
+          blueValues[i]
+        );
+    }
     strand.show();
   }
 }

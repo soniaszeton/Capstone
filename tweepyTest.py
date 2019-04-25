@@ -26,7 +26,7 @@ emotions = {
 
 # the list of keywords for each type of emotion
 wordLists = [
-    ['hate', 'pissed', 'mad'],
+    ['hate', 'pissed', 'angry'],
     ['scared', 'afraid', 'terrified'],
     ['puppy', 'happy', 'excited'],
     ['green', 'reduce', 'earth'],
@@ -53,6 +53,8 @@ checkpoint = int(round(time.time()))
 # the initial values of the emotions
 values = [0, 0, 0, 0, 0, 0, 0]
 
+total = 0
+
 # define a handler class for when data is received
 class Handler(StreamListener):
     """ A listener handles tweets that are received from the stream.
@@ -66,14 +68,25 @@ class Handler(StreamListener):
         print(status)
 
 
+def calculate_bulbs():
+    global values
+    global total
+    bulbs = []
+    for value in values:
+        bulbs.append(value*52/total)
+    return '\n'.join([str(i) for i in bulbs])
+
+
 def process_data(data):
     global checkpoint
     global values
+    global total
     current = int(round(time.time()))
     if current > checkpoint + 10:
         # every 10 seconds write current values out to S3 and reset them
         checkpoint = current
-        body = '\n'.join([str(i) for i in values])
+        #body = '\n'.join([str(i) for i in values])
+        body = calculate_bulbs()
         print("The current values are: ")
         print("anger: " + str(values[0]))
         print("fear: " + str(values[1]))
@@ -82,8 +95,11 @@ def process_data(data):
         print("contentment: " + str(values[4]))
         print("sadness: " + str(values[5]))
         print("love: " + str(values[6]))
+        print("TOTAL: " + str(total))
         print("")
+
         s3.Bucket('szeton-capstone').put_object(Key='tweetcounter.txt', Body=body)
+        total = 0
         values = [0, 0, 0, 0, 0, 0, 0]
     string = str(data)
     index = 0
@@ -91,6 +107,7 @@ def process_data(data):
         for keyword in words:
             if keyword in string:
                 values[index] += 1
+                total += 1
         index += 1
 
 # connect to the twitter streaming API
